@@ -1,0 +1,22 @@
+package com.winas_lesson.android.day4.Day4Sample.data.local.daos
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.winas_lesson.android.day4.Day4Sample.data.model.Content
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ContentDao {
+    @Query("SELECT * FROM contents")
+    fun getAllContents(): Flow<List<Content>>
+
+    @Query("DELETE FROM contents")
+    fun deleteAll()
+
+    @Insert
+    fun add(data: Content)
+
+    @Insert
+    fun addAll(data: List<Content>)
+}
