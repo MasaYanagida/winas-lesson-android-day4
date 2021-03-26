@@ -26,6 +26,8 @@ import com.winas_lesson.android.day4.Day4Sample.util.showToast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -52,6 +54,136 @@ class MainActivity : AbstractActivity(), ViewBindable {
         recyclerView?.adapter = adapter
         layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView?.layoutManager = layoutManager
+
+        // (2) load from master
+
+//        // load simple string
+//        var simpleString = readStringFromAssetFile("sample-text.txt")
+//        Timber.d("[TEXT] content data= ${simpleString}")
+//
+//        // load data single
+//        val jsonSingleString = readStringFromAssetFile("sample-single.json")
+//        jsonSingleString.jsonToObject<Content>()?.let { content ->
+//            Timber.d("[SINGLE] content data= ${content.debugDescription}")
+//        }
+//
+//        // load data array
+//        val jsonListString = readStringFromAssetFile("sample-list.json")
+//        jsonListString.jsonToList<Content>()?.let { contents ->
+//            contents.forEach { content ->
+//                Timber.d("[LIST] content data= ${content.debugDescription}")
+//            }
+//        }
+
+//        loadContentsFromMaster {
+//            Timber.d("loadContentsFromMaster complete!!")
+//            // fetch from local database using room
+//            GlobalScope.launch {
+//                Repository.localDb.contentDao().getAllContents().collect {
+//                    it.forEach { content ->
+//                        Timber.d("[CACHE] content data= ${content.debugDescription}")
+//                    }
+//                }
+//            }
+//        }
+
+//        Repository.content.getSingle(
+//            completion = {
+//                Timber.d("[SERVER] single content data= ${it.debugDescription}")
+//            },
+//            failure = {
+//                Timber.d("[SERVER] single content error!!")
+//            }
+//        )
+//        Repository.content.getList(
+//            completion = { contents ->
+//                contents.forEach { content ->
+//                    Timber.d("[SERVER] list content data= ${content.debugDescription}")
+//                }
+//            },
+//            failure = {
+//                Timber.d("[SERVER] list content error!!")
+//            }
+//        )
+//        Repository.content.getListWithErrorCode(
+//            completion = { contents, total, errorCode ->
+//                Timber.d("[SERVER] list total= $total, errorCode= $errorCode")
+//                contents.forEach { content ->
+//                    Timber.d("[SERVER] list content data= ${content.debugDescription}")
+//                }
+//            },
+//            failure = {
+//                Timber.d("[SERVER] list content error!!")
+//            }
+//        )
+
+        button?.setOnClickListener {
+            loadContentsFromServer()
+        }
+
+        if (Me.isFirstLaunch) {
+            loadContentsFromMaster {
+                Timber.d("loadContentsFromMaster complete!!")
+                showContentsFromCache()
+            }
+        } else {
+            showContentsFromCache()
+        }
+
+        Handler().postDelayed({
+            loadContentsFromServer()
+        }, 5000L)
+    }
+
+    private fun loadContentsFromMaster(completion: (() -> Unit)) {
+        GlobalScope.launch {
+            // load data array
+            val jsonListString = readStringFromAssetFile("sample-list.json")
+            val contents = jsonListString.jsonToList<Content>() ?: listOf()
+            // delete all cached contents from local database
+            Repository.localDb.contentDao().deleteAll()
+            contents.forEach { content ->
+                Timber.d("[LIST] content data= ${content.debugDescription}")
+            }
+            // save in local database as cache
+            Repository.localDb.contentDao().addAll(contents)
+            Handler(Looper.getMainLooper()).post {
+                completion()
+            }
+        }
+    }
+
+    private fun showContentsFromCache() {
+        // fetch from local database using room
+        GlobalScope.launch {
+            Repository.localDb.contentDao().getAllContents().collect { contents ->
+                contents.forEach { content ->
+                    Timber.d("[CACHE] content data= ${content.debugDescription}")
+                }
+                Handler(Looper.getMainLooper()).post {
+                    this@MainActivity.contents = contents
+                    showToast("キャッシュからコンテンツを表示しました！")
+                }
+            }
+        }
+    }
+
+    private fun loadContentsFromServer() {
+        Repository.content.getList(
+            completion = { contents ->
+                contents.forEach { content ->
+                    Timber.d("[SERVER] list content data= ${content.debugDescription}")
+                }
+                GlobalScope.async {
+                    Repository.localDb.contentDao().deleteAll()
+                    Repository.localDb.contentDao().addAll(contents)
+                }
+                showToast("サーバからコンテンツを表示しました！")
+            },
+            failure = {
+                Timber.d("[SERVER] list content error!!")
+            }
+        )
     }
 }
 

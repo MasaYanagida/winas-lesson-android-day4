@@ -1,5 +1,6 @@
 package com.winas_lesson.android.day4.Day4Sample.data.api
 
+import com.winas_lesson.android.day4.Day4Sample.data.dto.FeedListDto
 import com.winas_lesson.android.day4.Day4Sample.data.model.Content
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
@@ -23,4 +24,7 @@ interface SampleApiService {
 
     @GET("list-4.json")
     fun getList4(): Deferred<Response<List<Content>>>
+
+    @GET("list-with-error-code.json")
+    fun getListWithErrorCode(): Deferred<Response<FeedListDto<Content>>>
 }

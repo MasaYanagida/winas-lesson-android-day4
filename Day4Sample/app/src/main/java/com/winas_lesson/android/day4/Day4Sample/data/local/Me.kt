@@ -17,6 +17,7 @@ class Me {
 
     enum class Key(val keyName: String) {
         LAUNCH_COUNTER("launchCounter");
+
         val keyType: KeyType?
             get() {
                 return when (this) {

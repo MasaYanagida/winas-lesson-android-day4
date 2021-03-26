@@ -50,6 +50,25 @@ enum class Gender(val key: Int) {
 //    @ColumnInfo(name = "gender_id") var genderId: Int = Gender.UNKNOWN.key
 //)
 
+//@JsonClass(generateAdapter = true)
+//data class Content (
+//    var id: Int = 0,
+//    val name: String = "",
+//    val address: String = "",
+//    @Json(name = "gender") var genderId: Int = Gender.UNKNOWN.key
+//) : Feedable {
+//    val gender: Gender
+//        get() {
+//            val genders = Gender.values().filter { it.key == genderId }
+//            return if (genders.isNotEmpty()) genders[0] else Gender.UNKNOWN
+//        }
+//    val debugDescription: String
+//        get() {
+//            return "ID= $id, name= $name, address= $address, gender= $gender"
+//        }
+//}
+
+
 @Entity(
     tableName = "contents",
     indices = []
