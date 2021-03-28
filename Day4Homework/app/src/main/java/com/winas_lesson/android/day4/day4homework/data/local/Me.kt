@@ -15,7 +15,12 @@ class Me {
         val keyType: KeyType?
             get() {
                 // TODO
-                return null
+                return when (this) {
+                    USER_ID ->
+                        KeyType.STRING
+                    PASSWORD ->
+                        KeyType.STRING
+                }
             }
         val defaultValue: Any?
             get() {

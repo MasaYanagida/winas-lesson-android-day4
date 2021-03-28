@@ -2,7 +2,6 @@ package com.winas_lesson.android.day4.day4homework.ui
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +10,12 @@ import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.winas_lesson.android.day4.day4homework.data.local.Me
 import com.winas_lesson.android.day4.day4homework.data.model.Content
 import com.winas_lesson.android.day4.day4homework.databinding.ActivityContentListBinding
-import com.winas_lesson.android.day4.day4homework.databinding.ActivityMainBinding
 import com.winas_lesson.android.day4.day4homework.databinding.ContentItemViewBinding
 import com.winas_lesson.android.day4.day4homework.interfaces.ViewBindable
 import com.winas_lesson.android.day4.day4homework.util.showToast
-import timber.log.Timber
 import kotlin.properties.Delegates
 
 class ContentListActivity : AbstractActivity(), ViewBindable {
@@ -60,7 +58,9 @@ class ContentListActivity : AbstractActivity(), ViewBindable {
                     when (selectedItem) {
                         0 -> {
                             // TODO
-                            showToast("あなたのユーザーIDはXX、パスワードはXXです")
+                            val userId = Me.shared.get("USER_ID" as Me.Key)
+                            val password  = Me.shared.get("PASSWORD" as Me.Key)
+                            showToast("あなたのユーザーIDは${userId}、パスワードは${password}です")
                         }
                         1 -> {
                             // TODO

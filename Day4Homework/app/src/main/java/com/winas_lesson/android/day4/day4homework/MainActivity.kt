@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.viewbinding.ViewBinding
+import com.winas_lesson.android.day4.day4homework.data.local.Me
 import com.winas_lesson.android.day4.day4homework.databinding.ActivityMainBinding
 import com.winas_lesson.android.day4.day4homework.interfaces.ViewBindable
 import com.winas_lesson.android.day4.day4homework.ui.AbstractActivity
@@ -28,7 +29,8 @@ class MainActivity : AbstractActivity(), ViewBindable {
 
         button?.setOnClickListener {
             // TODO : save account data to (1)SharedPreference(Me), (2)Room(Account)
-
+            Me.shared.put(Me.Key.USER_ID , this.idTextView.toString())
+            Me.shared.put(Me.Key.PASSWORD, this.passwordTextView.toString())
             val intent = Intent(applicationContext, ContentListActivity::class.java)
             startActivity(intent)
         }
