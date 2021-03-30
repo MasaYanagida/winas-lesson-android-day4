@@ -29,8 +29,8 @@ class MainActivity : AbstractActivity(), ViewBindable {
 
         button?.setOnClickListener {
             // TODO : save account data to (1)SharedPreference(Me), (2)Room(Account)
-            Me.shared.put(Me.Key.USER_ID , this.idTextView.toString())
-            Me.shared.put(Me.Key.PASSWORD, this.passwordTextView.toString())
+            Me.shared.put(Me.Key.USER_ID , this.idTextView?.text.toString())
+            Me.shared.put(Me.Key.PASSWORD, this.passwordTextView?.text.toString())
             val intent = Intent(applicationContext, ContentListActivity::class.java)
             startActivity(intent)
         }

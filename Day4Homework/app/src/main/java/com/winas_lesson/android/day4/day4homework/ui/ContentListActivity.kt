@@ -3,6 +3,7 @@ package com.winas_lesson.android.day4.day4homework.ui
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,11 +56,14 @@ class ContentListActivity : AbstractActivity(), ViewBindable {
                 }
                 .setPositiveButton("OK") { dlg, _ ->
                     dlg.dismiss()
+
                     when (selectedItem) {
                         0 -> {
                             // TODO
-                            val userId = Me.shared.get("USER_ID" as Me.Key)
-                            val password  = Me.shared.get("PASSWORD" as Me.Key)
+                            Log.d("setPositiveButton", "step2")
+                            val userId = Me.shared.get(Me.Key.USER_ID) as String
+                            val password  = Me.shared.get(Me.Key.PASSWORD) as String
+                            Log.d("userId", userId.toString())
                             showToast("あなたのユーザーIDは${userId}、パスワードは${password}です")
                         }
                         1 -> {
