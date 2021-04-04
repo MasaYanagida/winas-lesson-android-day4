@@ -3,6 +3,8 @@ package com.winas_lesson.android.day4.day4homework.data.repository
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.winas_lesson.android.day4.day4homework.App
+import com.winas_lesson.android.day4.day4homework.data.local.AppDatabase
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.winas_lesson.android.day4.day4homework.data.api.SampleApiService
@@ -13,7 +15,10 @@ import java.util.concurrent.TimeUnit
 
 class Repository {
     companion object {
-        val localDb: RoomDatabase = TODO()
+        val localDb = Room.databaseBuilder(
+            App.context,
+            AppDatabase::class.java, "sample-database"
+        ).build()
 
         val apiInterface = Retrofit
             .Builder()

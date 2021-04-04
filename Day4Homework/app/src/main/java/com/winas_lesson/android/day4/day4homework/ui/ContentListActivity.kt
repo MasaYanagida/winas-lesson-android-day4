@@ -3,6 +3,8 @@ package com.winas_lesson.android.day4.day4homework.ui
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.winas_lesson.android.day4.day4homework.data.local.Me
 import com.winas_lesson.android.day4.day4homework.data.model.Content
+import com.winas_lesson.android.day4.day4homework.data.repository.Repository
 import com.winas_lesson.android.day4.day4homework.databinding.ActivityContentListBinding
 import com.winas_lesson.android.day4.day4homework.databinding.ContentItemViewBinding
 import com.winas_lesson.android.day4.day4homework.interfaces.ViewBindable
 import com.winas_lesson.android.day4.day4homework.util.showToast
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 class ContentListActivity : AbstractActivity(), ViewBindable {
@@ -68,7 +74,14 @@ class ContentListActivity : AbstractActivity(), ViewBindable {
                         }
                         1 -> {
                             // TODO
-                            showToast("あなたのユーザーIDはXX、パスワードはXXです")
+                            GlobalScope.launch {
+                                Repository.localDb.accountDao().getAllContents().collect() {
+                                    //TODO selectした結果の取得。
+//                                    contents.forEach { account ->
+//                                        showToast("あなたのユーザーIDは${userId}、パスワードは${password}です")
+//                                    }
+                                }
+                            }
                         }
                     }
                 }
