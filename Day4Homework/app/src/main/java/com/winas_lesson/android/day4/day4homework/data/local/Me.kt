@@ -12,10 +12,16 @@ class Me {
 
     enum class Key(val keyName: String) {
         USER_ID("userID"), PASSWORD("password");
+        //USER_ID("userID");
         val keyType: KeyType?
             get() {
                 // TODO
-                return null
+                return when (this) {
+                    USER_ID ->
+                        KeyType.STRING
+                    PASSWORD ->
+                        KeyType.STRING
+                }
             }
         val defaultValue: Any?
             get() {
@@ -30,11 +36,23 @@ class Me {
     fun get(key: Key): Any? {
         val keyType = key.keyType
         when (keyType) {
-            KeyType.BOOL -> return preference.getBoolean(key.keyName, (key.defaultValue as? Boolean) ?: false)
+            KeyType.BOOL -> return preference.getBoolean(
+                key.keyName,
+                (key.defaultValue as? Boolean) ?: false
+            )
             KeyType.INT -> return preference.getInt(key.keyName, (key.defaultValue as? Int) ?: 0)
-            KeyType.FLOAT -> return preference.getFloat(key.keyName, (key.defaultValue as? Float) ?: 0.0F)
-            KeyType.LONG -> return preference.getLong(key.keyName, (key.defaultValue as? Long) ?: 0L)
-            KeyType.STRING -> return preference.getString(key.keyName, (key.defaultValue as? String) ?: null)
+            KeyType.FLOAT -> return preference.getFloat(
+                key.keyName,
+                (key.defaultValue as? Float) ?: 0.0F
+            )
+            KeyType.LONG -> return preference.getLong(
+                key.keyName,
+                (key.defaultValue as? Long) ?: 0L
+            )
+            KeyType.STRING -> return preference.getString(
+                key.keyName,
+                (key.defaultValue as? String) ?: null
+            )
             KeyType.DATE -> {
                 val timestamp = preference.getLong(key.keyName, 0L)
                 return if (timestamp != 0L) {
