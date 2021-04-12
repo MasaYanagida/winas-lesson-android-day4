@@ -11,16 +11,22 @@ class Me {
     private val preference = AppPreferences(App.context)
 
     enum class Key(val keyName: String) {
-        USER_ID("userID"), PASSWORD("password");
-        val keyType: KeyType?
+        USER_ID("userID"), PASSWORD("password"), FIRST_LAUNCH("first_launch");
+        val keyType: KeyType
             get() {
-                // TODO
-                return null
+                return when(this) {
+                    USER_ID -> KeyType.STRING
+                    PASSWORD -> KeyType.STRING
+                    FIRST_LAUNCH -> KeyType.BOOL
+                }
             }
-        val defaultValue: Any?
+        val defaultValue: Any
             get() {
-                // TODO
-                return null
+                return when(this) {
+                    USER_ID -> ""
+                    PASSWORD -> ""
+                    FIRST_LAUNCH -> true
+                }
             }
     }
     enum class KeyType {
@@ -44,7 +50,6 @@ class Me {
                 }
             }
         }
-        return null
     }
 
     fun put(key: Key, value: Boolean) {
