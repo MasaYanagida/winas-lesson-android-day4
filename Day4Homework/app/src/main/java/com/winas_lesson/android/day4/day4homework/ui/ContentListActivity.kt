@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +13,18 @@ import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.winas_lesson.android.day4.day4homework.data.local.Me
 import com.winas_lesson.android.day4.day4homework.data.model.Content
+import com.winas_lesson.android.day4.day4homework.data.repository.Repository
 import com.winas_lesson.android.day4.day4homework.databinding.ActivityContentListBinding
 import com.winas_lesson.android.day4.day4homework.databinding.ActivityMainBinding
 import com.winas_lesson.android.day4.day4homework.databinding.ContentItemViewBinding
 import com.winas_lesson.android.day4.day4homework.interfaces.ViewBindable
 import com.winas_lesson.android.day4.day4homework.util.showToast
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
 
@@ -53,18 +61,24 @@ class ContentListActivity : AbstractActivity(), ViewBindable {
                 .setTitle("アカウント")
                 .setSingleChoiceItems(arrayOf("1: SharedPreferences", "2: Room"), selectedItem) { dlg, index ->
                     selectedItem = index
-                    showToast("#issue selected item is $index")
+                    //showToast("#issue selected item is $index")
                 }
                 .setPositiveButton("OK") { dlg, _ ->
                     dlg.dismiss()
                     when (selectedItem) {
                         0 -> {
-                            // TODO
-                            showToast("あなたのユーザーIDはXX、パスワードはXXです")
+                            val userId = (Me.shared.get(Me.Key.USER_ID) as? String) ?: ""
+                            val password = (Me.shared.get(Me.Key.PASSWORD) as? String) ?: ""
+                            showToast("あなたのユーザーIDは${userId}、パスワードは${password}です")
                         }
                         1 -> {
-                            // TODO
-                            showToast("あなたのユーザーIDはXX、パスワードはXXです")
+                            GlobalScope.launch {
+                                val account = Repository.localDb.accountDao().getAccount().collect {
+                                    Handler(Looper.getMainLooper()).post {
+                                        showToast("あなたのユーザーIDは${it.userId}、パスワードは${it.password}です")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -73,11 +87,44 @@ class ContentListActivity : AbstractActivity(), ViewBindable {
             dialog.show()
         }
         reloadButton?.setOnClickListener {
-            // TODO
+            loadContentsFromServer()
         }
 
-        // TODO : showContentsFromCache
-        // TODO : loadContentsFromServer
+        showContentsFromCache()
+        showToast("キャッシュからコンテンツを表示しました！")
+
+        Handler().postDelayed({
+            loadContentsFromServer()
+        }, 5000L)
+    }
+
+    private fun showContentsFromCache() {
+        // fetch from local database using room
+        GlobalScope.launch {
+            Repository.localDb.contentDao().getAllContents().collect { contents ->
+                contents.forEach { content ->
+                    Timber.d("[CACHE] content data= ${content.debugDescription}")
+                }
+                Handler(Looper.getMainLooper()).post {
+                    this@ContentListActivity.contents = contents
+                }
+            }
+        }
+    }
+
+    private fun loadContentsFromServer() {
+        Repository.content.getList(
+            completion = { contents ->
+                GlobalScope.async {
+                    Repository.localDb.contentDao().deleteAll()
+                    Repository.localDb.contentDao().addAll(contents)
+                }
+                showToast("サーバからコンテンツを表示しました！")
+            },
+            failure = {
+                Timber.d("[SERVER] list content error!!")
+            }
+        )
     }
 }
 

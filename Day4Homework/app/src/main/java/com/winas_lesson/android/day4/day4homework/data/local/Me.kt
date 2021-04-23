@@ -14,13 +14,11 @@ class Me {
         USER_ID("userID"), PASSWORD("password");
         val keyType: KeyType?
             get() {
-                // TODO
-                return null
+                return KeyType.STRING
             }
         val defaultValue: Any?
             get() {
-                // TODO
-                return null
+                return ""
             }
     }
     enum class KeyType {
